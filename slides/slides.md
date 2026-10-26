@@ -81,17 +81,17 @@ layout: section
 
 <div class="rounded-xl border border-slate-700 p-4">
 <div class="text-2xl mb-2">🛡️</div>
-<div class="font-bold mb-1">安全証明の壁</div>
+<div class="font-bold mb-1">責任の所在が検証できない</div>
 <div class="text-sm opacity-80">
-ロボットが間違った商品を取ったら？ 事故の時「AIのミスか、データの不備か」を誰も証明できない。
+AIが商品を誤認したら事故になる。でも「AIのミスか、データの不備か」どこに責任があるのかを第三者が検証できない。
 </div>
 </div>
 
 <div class="rounded-xl border border-slate-700 p-4">
 <div class="text-2xl mb-2">🔒</div>
-<div class="font-bold mb-1">知財ジレンマの壁</div>
+<div class="font-bold mb-1">監査済みか分からない</div>
 <div class="text-sm opacity-80">
-AI企業は「モデルの中身（知財）」を絶対に見せたくない。それでも安全性の監査は求められる。
+AI企業はモデルの中身を見せたくない。でも外部からは「本当に監査済みなのか」を検証できない。
 </div>
 </div>
 
