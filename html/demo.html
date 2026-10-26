@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProofPick デモ — 商品選択の根拠を証明する</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+    body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background-color: #020617; color: #e2e8f0; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .step { opacity: 0; transform: translateY(8px); transition: all .5s ease; }
+    .step.show { opacity: 1; transform: translateY(0); }
+    .badge-ok { color: #34d399; border-color: rgba(52,211,153,.4); background: rgba(6,78,59,.4); }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-4xl">
+
+    <!-- ヘッダー -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <div class="text-xs font-mono text-emerald-400 tracking-widest mb-1">PROOFPICK — 落とし込みデモ</div>
+        <h1 class="text-2xl font-bold text-slate-100">商品選択の「根拠」を証明する</h1>
+        <p class="text-sm text-slate-400 mt-1">小麦アレルギーのお客さまが「小麦不使用のルー」を注文した場面</p>
+      </div>
+      <button id="runBtn" onclick="run()"
+        class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-emerald-600/20">
+        ▶ 実行して確認
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <!-- ステップ1: 注文 -->
+      <div id="s1" class="step rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <div class="text-xs font-mono text-cyan-300 mb-2">STEP 1 — 注文</div>
+        <div class="rounded-xl border border-slate-700 bg-slate-800/60 p-4">
+          <div class="text-xs text-slate-400 mb-1">お客さま：山田さん（小麦アレルギー）</div>
+          <div class="text-slate-100 font-medium">「カレー用の野菜と、<span class="text-emerald-300">小麦不使用</span>のルー」</div>
+        </div>
+        <div class="mt-3 text-xs text-slate-500">※ 個人情報（氏名・住所）はこの時点でマスク済み</div>
+      </div>
+
+      <!-- ステップ2: 候補比較 -->
+      <div id="s2" class="step rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <div class="text-xs font-mono text-purple-300 mb-2">STEP 2 — 候補の比較検討</div>
+        <div class="space-y-3">
+          <div class="rounded-xl border border-rose-800/60 bg-rose-950/30 p-3">
+            <div class="font-bold text-rose-300 text-sm">候補 A：市販カレールー</div>
+            <div class="text-xs text-slate-300 mt-1">アレルゲン：<span class="text-rose-300">小麦 含有 ✕</span><br>価格：198円</div>
+          </div>
+          <div class="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3">
+            <div class="font-bold text-emerald-300 text-sm">候補 B：米粉カレールー</div>
+            <div class="text-xs text-slate-300 mt-1">アレルゲン：<span class="text-emerald-300">小麦 不使用 ✓</span><br>価格：258円</div>
+          </div>
+        </div>
+        <div class="mt-3 text-xs text-slate-500">比較軸：アレルゲン適合 → 価格</div>
+      </div>
+
+      <!-- ステップ3: 選択と根拠 -->
+      <div id="s3" class="step rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <div class="text-xs font-mono text-emerald-300 mb-2">STEP 3 — 選択と根拠</div>
+        <div class="rounded-xl border border-emerald-600 bg-emerald-900/30 p-4 text-center">
+          <div class="text-sm text-slate-300">選択結果</div>
+          <div class="text-lg font-bold text-emerald-300 mt-1">候補 B（米粉・258円）</div>
+          <div class="text-xs text-slate-400 mt-2">根拠：<span class="text-emerald-300">「アレルゲン基準（小麦不使用）に適合」</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ステップ4: 証明バッジ -->
+    <div id="s4" class="step mt-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+      <div class="text-xs font-mono text-amber-300 mb-3">STEP 4 — お客さまに提示する「安心バッジ」</div>
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="badge-ok rounded-xl border p-3">
+          <div class="text-2xl">✓</div>
+          <div class="text-sm font-semibold text-emerald-300 mt-1">アレルギー基準適合</div>
+        </div>
+        <div class="badge-ok rounded-xl border p-3">
+          <div class="text-2xl">✓</div>
+          <div class="text-sm font-semibold text-emerald-300 mt-1">選択の根拠を記録済み</div>
+        </div>
+        <div class="badge-ok rounded-xl border p-3">
+          <div class="text-2xl">✓</div>
+          <div class="text-sm font-semibold text-emerald-300 mt-1">個人情報マスク済み</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ステップ5: 決定証跡 -->
+    <div id="s5" class="step mt-4 rounded-2xl border border-slate-800 bg-slate-950/80 p-5">
+      <div class="text-xs font-mono text-slate-400 mb-2">決定証跡（あとから誰でも検証できる記録）</div>
+      <pre class="font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">{
+  "order": "カレー用の野菜と小麦不使用のルー",
+  "requirement": "アレルゲン: 小麦 不使用",
+  "candidates": [
+    { "name": "市販カレールー", "price": 198, "allergen": "小麦含有", "ok": false },
+    { "name": "米粉カレールー", "price": 258, "allergen": "小麦不使用", "ok": true }
+  ],
+  "decision": "候補B（米粉カレールー）",
+  "reason": "アレルゲン基準（小麦不使用）に適合",
+  "verified": true
+}</pre>
+    </div>
+
+    <div class="mt-6 text-xs text-slate-500 text-center">
+      暗号の話は一切出していません。ここに「証明」を載せるのが次のステップ（理想）です。
+    </div>
+
+  </div>
+
+  <script>
+    let idx = 0;
+    const steps = ['s1','s2','s3','s4','s5'];
+    function run() {
+      if (idx >= steps.length) { idx = 0; steps.forEach(id => document.getElementById(id).classList.remove('show')); document.getElementById('runBtn').textContent = '▶ 実行して確認'; return; }
+      document.getElementById(steps[idx]).classList.add('show');
+      idx++;
+      if (idx >= steps.length) document.getElementById('runBtn').textContent = '↻ リセット';
+    }
+  </script>
+</body>
+</html>
