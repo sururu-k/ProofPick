@@ -84,5 +84,3 @@ gantt
 | `slides/slides.md` | Slidev 製の発表スライド |
 | `submission/zenjyocon_entry_sheet_2026.pptx` | 応募用紙 |
 | `md/STRATEGY.md` | 開発戦略・実装仕様書 |
-| `md/API要件定義書.md` | API の要件定義 |
-| `md/Web要件定義書.md` | Web 基盤の要件定義 |
