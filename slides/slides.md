@@ -192,7 +192,7 @@ layout: section
 
 <div class="text-center">
 <div class="text-xs font-mono text-slate-400 mb-2">動作するデモ（右は埋め込み）</div>
-<a href="/demo.html" target="_blank" class="text-emerald-300 text-sm hover:underline">→ 別タブで開く</a>
+<a href="demo.html" target="_blank" class="text-emerald-300 text-sm hover:underline">→ 別タブで開く</a>
 </div>
 
 </div>
@@ -225,7 +225,7 @@ layout: section
 
 </div>
 
-<iframe src="/demo.html" class="mt-5 w-full h-[300px] rounded-xl border border-slate-700 bg-slate-950" loading="lazy"></iframe>
+<iframe src="demo.html" class="mt-5 w-full h-[300px] rounded-xl border border-slate-700 bg-slate-950" loading="lazy"></iframe>
 
 ---
 

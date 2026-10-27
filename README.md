@@ -49,6 +49,25 @@
 
 ## スケジュール（提出期限：11/10 17:00）
 
+```mermaid
+gantt
+    title ProofPick 開発スケジュール
+    dateFormat  YYYY-MM-DD
+    section 設計
+    全体設計・I/F決定        :2026-10-25, 4d
+    APIエンドポイント設計    :2026-10-26, 3d
+    section 実装
+    村上: 暗号・分岐器・PII  :2026-10-29, 6d
+    今井: API・MCP・ロボ制御 :2026-10-29, 6d
+    米川&吉田: Web基盤       :2026-10-29, 6d
+    section 結合
+    結合テスト               :2026-11-04, 3d
+    30秒デモ動画撮影         :2026-11-07, 1d
+    section 提出
+    最終チェック・提出       :2026-11-08, 3d
+    提出締切                 :milestone, 2026-11-10, 0d
+```
+
 | フェーズ | 期間 | 内容 |
 |---|---|---|
 | Phase 1 | 〜10/28 | 設計・インターフェース決定 |
@@ -67,3 +86,4 @@
 | `slides/slides.md` | Slidev 製の発表スライド |
 | `submission/zenjyocon_entry_sheet_2026.pptx` | 応募用紙 |
 | `md/STRATEGY.md` | 開発戦略・実装仕様書 |
+| `md/API要件定義書.md` | API の要件定義（今井担当） |
