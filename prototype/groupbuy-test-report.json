@@ -1,0 +1,16 @@
+{
+  "scope": "Role/transaction tests with explicit FakeEngine; real REP3/Groth16 tested separately in groupbuy-mpc-browser-report.json. No real payment or delivery.",
+  "tests": 17,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_sha256": {
+    "groupbuy_server.py": "1a9bb1490ccbd862b85728223ca30785443bef5c48d70223268afb38103c6d1d",
+    "groupbuy.js": "d42f78d6b5d764c867d7e4ec3730c978fad8cb8218222ca7bbc9bdcd0a1e534e",
+    "groupbuy_mpc.js": "74cb8e80f418077b3c5ff30b559e5b849e0910e2fe58fbf806c7e4360c011c43",
+    "groupbuy_proof.py": "d43d2e4a8892075d94687226623cafb0e70a2aedeeeb8a3e2d765b9612125985",
+    "groupbuy.html": "583797c30b8545334bbc52d37566295336efc87c5e26a337b1084a3ab97db512",
+    "test_groupbuy.py": "d39e56675696f3dfa172d736be477418a7ccc3b4372c4752e27939fd4b69d7d3",
+    "check_groupbuy.py": "2a787fb7ab03d46c877f5c9d448d5b69ec63dba5e9c9999fdde65e280f13416a"
+  }
+}

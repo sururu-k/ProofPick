@@ -1,0 +1,72 @@
+ProofPick / MPC・ZK共同購入 / 2026-11-05
+
+必要なもの:
+Windows x64、Git、Python 3.12、Node.js 24、Rust 1.90以降（MSVC）、Visual Studio C++ Build Tools。
+C++ Build ToolsにはMSVC x64/x86とWindows SDKが必要。初回導入にはネット接続が必要。
+ブラウザはWeb Crypto APIが使えるEdge/Chrome。
+
+依存物と固定版co-circomの導入:
+リポジトリのルート、またはソースZIPの展開先でPowerShellを開く。
+python -m venv .venv
+$env:Path = "$PWD\.venv\Scripts;$env:Path"
+powershell -File crypto-groupbuy/install.ps1 -BuildNative
+既存の .tools/co-snarks がある場合、固定コミットとの一致を検査し、勝手に変更しない。
+初回のRustビルドには数分かかる。同じPowerShellを使ってアプリを起動する。
+
+起動:
+python prototype/groupbuy_server.py
+http://127.0.0.1:8765/
+初回起動時に、.work/groupbuy-mpc.sqlite3とノード用の鍵がそのPCで作られる。
+別のPowerShellを開いた場合は .\.venv\Scripts\python.exe prototype/groupbuy_server.py で起動できる。
+
+同梱のpurchase.zkey / verification_key.jsonを使うため、初回の証明生成にsetup.mjsは不要。
+回路やパラメータを意図的に再生成する場合だけ node crypto-groupbuy/setup.mjs。
+これは開発用のローカルセットアップであり、独立した複数者による信頼できる設定儀式ではない。
+鍵を再生成すると、以前の証明は新しい検証鍵では検証できない。
+
+試用:
+1. 販売者が募集を作り、販売者の秘密鍵を保存する。
+2. 別々のブラウザプロファイルの参加者が2〜8件の注文を出す。
+3. 主催者が締め切る。
+4. 販売者が「秘密のまま集計・ZK検証」を押す。
+5. 成立なら注文を開き、commitmentと個別数量の対応を確認して発注する。
+6. 準備完了後、参加者がそれぞれ受け取りを記録する。
+
+検査:
+python prototype/check_groupbuy.py
+  17件の役割・DB検査。この単体検査では暗号エンジンをFakeEngineに置換。
+node crypto-groupbuy/circuit_tests.mjs
+  実際のCircom WASMで、不正な数量・無効スロットなど6条件を拒否。
+node crypto-groupbuy/verify_export.mjs prototype/groupbuy-mpc-proof-example.json
+  実際のGroth16証明を検証。公開入力の主張そのものの認証は別途必要。
+python crypto-groupbuy/adversarial.py PATH_TO_COMPLETED_TEST_DB
+  実際に注文・証明・受け取りを完了した試用DBを使い、合計・証明・登録情報の改変を拒否。
+
+実測記録:
+prototype/groupbuy-mpc-browser-report.json：3参加者の数量2・3・4から合計9個・1620円。
+prototype/groupbuy-mpc-adversarial-report.json：実証明と登録情報に対する12検査。
+prototype/groupbuy-circuit-report.json：6種類の不正入力を拒否。
+
+秘密の境界:
+参加者のブラウザで数量・saltをREP3秘密分散。各ノードの2つのシェアをRSA-OAEPで暗号化。
+アプリサーバーは暗号化シェアを保持し、数量を復元しない。
+3つのtrusteeプロセスが各自の鍵で自分の入力シェアだけを復号。
+3つのco-circomプロセスが分散witnessを計算し、別の3プロセスがGroth16を共同生成。
+snarkjsで公開注文commitment、募集条件、締切時のスナップショットとの対応を検証。
+個別注文は、成立確認後に販売者の端末で履行用に開示する。
+販売者用RSA暗号文と秘密分散入力の一致を、暗号文のままZK証明する回路ではない。
+開示時にsalt付きcommitmentを再計算して一致を検査する。
+
+前提と限界:
+同一PC上の実証。OS・管理者は全キーや入力シェアへアクセスできる。
+REP3は受動的攻撃・正直な多数派を前提とする。独立3組織での運用を実証したものではない。
+ブラウザへ配るJavaScriptと公開鍵、開発用CRSを信頼する。
+参加者の実在性は未確認。複数口や結託、公開合計からの差分推測を防ぐ仕組みではない。
+数量1〜9999、1募集1商品・固定単価・2〜8注文。予算は端末で確認し、ZKの対象外。
+物品の配送や実決済は行わない。受け取りは本人の申告。
+
+利用・参照:
+co-circom 0.10.0 / TaceoLabs co-snarks、固定版はupstream.json。
+circomlibjs 0.1.7のPoseidon定数を使用（GPL-3.0）。ライセンス全文を同梱。
+研究上の参考：niikun/mpc_group_purchasing。そこからのコード複製はない。
+今回の注文回路、ブラウザの分散入力、証明と発注の接続はProofPickで追加。

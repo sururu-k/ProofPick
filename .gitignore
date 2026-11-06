@@ -1,2 +1,11 @@
 .DS_Store
 CSS2026_proceedings
+__pycache__/
+*.sqlite3
+*.sqlite3-*
+*.trustees/
+.venv/
+.tools/
+.work/
+crypto-tfhe/target/
+crypto-tfhe/**/*.private

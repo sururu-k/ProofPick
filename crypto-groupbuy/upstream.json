@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/TaceoLabs/co-snarks",
+  "commit": "ea197004880ef48d664ad8027c65a24308dfd61e",
+  "component": "co-circom",
+  "version": "0.10.0",
+  "license": "GPL-3.0",
+  "status": "native build and 3-process REP3 witness/proof generation verified; independent snarkjs verification passed",
+  "local_circuit": "purchase.circom"
+}

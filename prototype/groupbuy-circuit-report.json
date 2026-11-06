@@ -1,0 +1,30 @@
+{
+  "scope": "Actual Circom WASM witness constraints; intentionally invalid inputs. Not a multi-party run.",
+  "checks": [
+    {
+      "case": "active_zero_quantity",
+      "passed": true
+    },
+    {
+      "case": "quantity_above_9999",
+      "passed": true
+    },
+    {
+      "case": "negative_field_quantity",
+      "passed": true
+    },
+    {
+      "case": "inactive_nonzero_quantity",
+      "passed": true
+    },
+    {
+      "case": "inactive_nonzero_salt",
+      "passed": true
+    },
+    {
+      "case": "nonboolean_active",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

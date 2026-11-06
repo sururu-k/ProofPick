@@ -1,0 +1,12 @@
+# Preserve the bytes used by proof manifests and the source archive on Windows.
+crypto-groupbuy/** -text
+prototype/groupbuy* -text
+prototype/groupbuy-vendor/** -text
+prototype/check_groupbuy.py -text
+prototype/test_groupbuy.py -text
+prototype/process_lock.py -text
+submission/groupbuy-* -text
+submission/index.html -text
+submission/product.html -text
+submission/entry-copy-2026.json -text
+submission/build_groupbuy_bundle.py -text

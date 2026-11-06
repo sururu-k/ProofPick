@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-05",
+  "passed": true,
+  "baseline_zip_sha256": "a74c717af670b553fe383c9ce4e5c2484ac6f71babca3f8a925a42a8ffeb9e84",
+  "scope": "Extracted source package. Python/OS, Node libraries and co-circom native build shared via directory junctions; not a fresh-PC dependency installation. Fresh trustee keys and database in extracted directory.",
+  "unit_tests": 17,
+  "browser_checks": 10,
+  "real_mpc_groth16": true,
+  "eligible_and_ineligible_cases": true,
+  "receipt_workflow_completed": true
+}

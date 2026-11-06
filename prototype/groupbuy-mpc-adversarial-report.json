@@ -1,0 +1,54 @@
+{
+  "scope": "Actual Groth16 verification with independently rebuilt current-registry public inputs; no verifier mocks. Same-PC and development CRS.",
+  "checks": [
+    {
+      "case": "original_real_proof",
+      "passed": true
+    },
+    {
+      "case": "changed_total",
+      "passed": true
+    },
+    {
+      "case": "changed_amount",
+      "passed": true
+    },
+    {
+      "case": "changed_eligibility",
+      "passed": true
+    },
+    {
+      "case": "changed_batch_anchor",
+      "passed": true
+    },
+    {
+      "case": "changed_context",
+      "passed": true
+    },
+    {
+      "case": "changed_commitment",
+      "passed": true
+    },
+    {
+      "case": "changed_curve_proof",
+      "passed": true
+    },
+    {
+      "case": "different_snapshot",
+      "passed": true
+    },
+    {
+      "case": "omitted_order",
+      "passed": true
+    },
+    {
+      "case": "replaced_registered_order",
+      "passed": true
+    },
+    {
+      "case": "changed_registered_price",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,6 @@
+Poseidon round constants and MDS matrix for 4 inputs (t=5).
+Source: iden3/circomlibjs 0.1.7, src/poseidon_constants.json (C[3], M[3]).
+https://github.com/iden3/circomlibjs
+License: GPL-3.0. Full license text is CIRCOMLIBJS-LICENSE.
+The BigInt adapter in groupbuy_mpc.js follows the parameterized reference algorithm.
+The constants are redistributed unchanged as numerical values.

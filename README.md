@@ -1,86 +1,32 @@
 # ProofPick（プルーフピック）
 
-商品選択の「根拠」を証明する AI 買い物代行基盤。
-第4回 デジタル学園祭「全国情報教育コンテスト（全情コン2026）」／第1回 愛知県大会 応募作品。
+個別の注文数量を復元せずに共同購入の合計と成立条件を計算するWebアプリです。ブラウザで秘密分散した注文をREP3で集計し、Groth16証明を検証してから発注・受け取りへ進みます。
 
-- 理想：誰でも AI ロボを安心して走らせられる社会（インフラ分離）
-- 核心：「なぜその商品を選んだか」を証明できること
-- 落とし込み：ブラウザで動くデモ（`html/demo.html`）
+## 別のWindows PCで起動する
 
----
+Git、Python 3.12、Node.js 24、Rust 1.90以降（MSVC）、Visual Studio C++ Build Tools（MSVC x64/x86・Windows SDK）が必要です。
 
-## 役割分担
-
-| 区分 | 内容 |
-|---|---|
-| 暗号・核心ロジック | 全体企画・暗号（ZK/vFHE/DCSS/TEE）・分岐器核心・PIIマスク・インジェクション防御・エントリーシート・デモ動画 |
-| Web 基盤 | Web 注文画面・ダッシュボード / 分岐器の通常動作登録 / タスクログ・商品マスタ DB・テスト |
-| API | 自律走行・アーム把持 / API・MCP サーバー構築 / 軽量 Web 実装 |
-
----
-
-## 計画表
-
-### 暗号・核心ロジック
-
-- [ ] 分岐器トリアージの核心設計（regex＋条件判断、LLM 必要部分のみ抽出）
-- [ ] プロンプトインジェクション防御（ユーザプロンプトレベル）
-- [ ] PII 自動マスク（正規表現＋機械学習）
-- [ ] ZK Lookup / vFHE / DCSS / TEE の暗号回路設計
-- [ ] エントリーシート執筆・30秒デモ動画統括
-
-### Web 基盤
-
-- [ ] Web 注文画面・ピッキング管理ダッシュボード（React/Tailwind）
-- [ ] 分岐器に登録する「通常動作」の定義・実装
-- [ ] タスク実行ログ管理、商品マスタ DB 連携、テストハーネス
-
-### API
-
-- [ ] ロボット制御 API エンドポイント設計（移動・把持・スキャン）
-- [ ] MCP（Model Context Protocol）サーバー構築
-- [ ] 自律走行・アーム把持ハードウェア制御（UIAPduino / Raspberry Pi）
-- [ ] 実行基盤 ⇄ ロボットの連携 API 実装
-- [ ] 軽量 Web 実装（注文受付 UI の土台）
-
----
-
-## スケジュール（提出期限：11/10 17:00）
-
-```mermaid
-gantt
-    title ProofPick 開発スケジュール
-    dateFormat  YYYY-MM-DD
-    section 設計
-    全体設計・I/F決定        :2026-10-25, 4d
-    APIエンドポイント設計    :2026-10-26, 3d
-    section 実装
-    暗号・分岐器・PII     :2026-10-29, 6d
-    API・MCP・ロボ制御    :2026-10-29, 6d
-    Web基盤              :2026-10-29, 6d
-    section 結合
-    結合テスト               :2026-11-04, 3d
-    30秒デモ動画撮影         :2026-11-07, 1d
-    section 提出
-    最終チェック・提出       :2026-11-08, 3d
-    提出締切                 :milestone, 2026-11-10, 0d
+```powershell
+git clone --depth 1 https://github.com/sururu-k/ProofPick.git
+cd ProofPick
+python -m venv .venv
+$env:Path = "$PWD\.venv\Scripts;$env:Path"
+powershell -File crypto-groupbuy/install.ps1 -BuildNative
+python prototype/groupbuy_server.py
 ```
 
-| フェーズ | 期間 | 内容 |
-|---|---|---|
-| Phase 1 | 〜10/28 | 設計・インターフェース決定 |
-| Phase 2 | 10/29〜11/3 | 各自の実装スプリント |
-| Phase 3 | 11/4〜11/7 | 結合テスト & 30秒デモ動画撮影 |
-| Phase 4 | 11/8〜11/10 17:00 | 最終チェック・提出 |
+[アプリを開く](http://127.0.0.1:8765/)。すでにcloneしている場合は `git pull --ff-only` で更新できます。初回のRustビルドには数分かかります。DBとノード用の鍵は起動したPCで作成されます。
 
----
+Gitを使わずに移す場合は [ソースZIP](submission/groupbuy-source.zip) を展開し、展開先で `python -m venv .venv` から実行してください。[詳しい再現手順](crypto-groupbuy/REPRODUCE.txt)
 
-## 成果物
+## 試用と応募資料
 
-| ファイル | 内容 |
-|---|---|
-| `html/demo.html` | 商品選択の根拠を証明する実行基盤デモ（実装版） |
-| `html/whiteboard.html` | 6レイヤ・14ノードのアーキテクチャ白板（研究段階の数理詳細つき） |
-| `slides/slides.md` | Slidev 製の発表スライド |
-| `submission/zenjyocon_entry_sheet_2026.pptx` | 応募用紙 |
-| `md/STRATEGY.md` | 開発戦略・実装仕様書 |
+1. 販売者が募集を作成し、別々のブラウザプロファイルから2〜8件の注文を出す。
+2. 主催者が受付を締め切り、販売者が「秘密のまま集計・ZK検証」を実行する。
+3. 成立したら販売者が注文を開いて発注し、準備完了後に参加者が受け取りを記録する。
+
+実証では3件の注文から合計9個・1,620円の証明を共同生成し、別実装で検証してから受け取りまで進めました。[応募資料と検証結果](submission/index.html)
+
+1商品・固定単価の試用版です。同一PCの管理者・OSと開発用の証明パラメータを信頼します。成立後は、商品を用意する販売者に個別注文を開示します。予算確認はブラウザ内で行い、実決済や配送は接続していません。
+
+[参考元と実装範囲](submission/product.html)。ソースZIPは `python submission/build_groupbuy_bundle.py` で再生成できます。

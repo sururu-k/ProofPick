@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-05",
+  "scope": "3 buyer browser contexts; 3 native REP3 witness processes and 3 Groth16 proving processes on one trusted PC; development CRS; synthetic orders; no real payment/delivery.",
+  "checks": [
+    {
+      "name": "3ブラウザで数量2・3・4を端末で秘密分散し暗号化送信",
+      "passed": true
+    },
+    {
+      "name": "証明前の個別注文の復号を拒否",
+      "passed": true
+    },
+    {
+      "name": "実際のREP3共同計算・Groth16共同証明・snarkjs検証が成功",
+      "passed": true
+    },
+    {
+      "name": "6個のネイティブプロセスと32公開入力の証跡を保存",
+      "passed": true
+    },
+    {
+      "name": "開示した個別注文を登録commitmentと照合",
+      "passed": true
+    },
+    {
+      "name": "発注時にも実証明を再検証",
+      "passed": true
+    },
+    {
+      "name": "ZK検証済み発注から3件の受け取りまで完了",
+      "passed": true
+    },
+    {
+      "name": "成立数量に届かないことも実際に共同証明",
+      "passed": true
+    },
+    {
+      "name": "不成立の証明では発注を拒否し個別注文も開示しない",
+      "passed": true
+    },
+    {
+      "name": "ブラウザ実行エラーなし",
+      "passed": true
+    }
+  ],
+  "elapsed_ms": 3109.71
+}

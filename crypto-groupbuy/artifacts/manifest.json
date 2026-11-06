@@ -1,0 +1,6 @@
+{
+  "purchase.zkey": "8967e44662e788936a99bd0b3368d8f63a66787c34a1f015e8ff5956251e76d5",
+  "verification_key.json": "663490c4b4cd8a396ad7ce1907dc1978748d7f15ccc1ecf3810f7a352f716d2e",
+  "purchase_js/purchase.wasm": "c0c5a5852800768eb971ec64ef1335a92db6cd76592bcee7a8ed7fbd06a7a66c",
+  "../purchase.circom": "767b8e7fa282cae38ccb7728b018f190067dbf4aeee86a4206f0c8169a17ee99"
+}
