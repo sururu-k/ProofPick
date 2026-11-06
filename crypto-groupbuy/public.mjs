@@ -16,4 +16,4 @@ for(const [k,arr]of Object.entries({active,tags,commitments}))arr.forEach((v,i)=
 job.public_input=input;
 job.expected_tail=[job.context,job.batch,String(job.price),String(job.minimum),...active,...tags,...commitments];
 job.expected_anchor=p([job.context,job.batch]);
-fs.writeFileSync(file,JSON.stringify(job));process.exit(0);
+fs.writeFileSync(file,JSON.stringify(job));
