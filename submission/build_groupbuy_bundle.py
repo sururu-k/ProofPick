@@ -8,11 +8,15 @@ from urllib.parse import urlsplit, unquote
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
-NAMES=['prototype/'+x for x in ('groupbuy_server.py','groupbuy.js','groupbuy_mpc.js','groupbuy_proof.py','process_lock.py','groupbuy.html','test_groupbuy.py','check_groupbuy.py','groupbuy-test-report.json',
- 'groupbuy-mpc-browser-report.json','groupbuy-mpc-proof-example.json','groupbuy-mpc-adversarial-report.json','groupbuy-circuit-report.json','groupbuy-reproduction-report.json',
- 'groupbuy-vendor/poseidon.json','groupbuy-vendor/CIRCOMLIBJS-LICENSE','groupbuy-vendor/NOTICE.txt')]+[
- 'submission/'+x for x in ('index.html','product.html','entry-copy-2026.json','groupbuy-issue-map.html','groupbuy-demo.png','groupbuy-order.png','groupbuy-mpc-proof.png','zenjyocon_entry_sheet_2026.pptx','build_groupbuy_bundle.py')]
-NAMES += ['crypto-groupbuy/'+name for name in (
+NAMES=['src/'+x for x in (
+    'groupbuy_server.py','groupbuy.js','groupbuy_mpc.js','groupbuy_identity.js',
+    'groupbuy_identity.py','groupbuy_proof.py','process_lock.py','groupbuy.html',
+    'groupbuy-vendor/poseidon.json','groupbuy-vendor/CIRCOMLIBJS-LICENSE','groupbuy-vendor/NOTICE.txt')]
+NAMES += ['tests/'+x for x in ('test_groupbuy.py','test_identity.py','check_groupbuy.py')]
+NAMES += ['tests/reports/'+p.name for p in sorted((ROOT/'tests/reports').glob('*.json')) if p.name != 'groupbuy-test-current.json']
+NAMES += ['submission/'+x for x in ('index.html','product.html','entry-copy-2026.json','groupbuy-issue-map.html','groupbuy-demo.png','groupbuy-order.png','groupbuy-mpc-proof.png','zenjyocon_entry_sheet_2026.pptx','build_groupbuy_bundle.py')]
+NAMES += ['slides/index.html','integration/pasta-compose.yml']
+NAMES += ['crypto/'+name for name in (
     'LICENSE-GPL','REPRODUCE.txt','adversarial.py','browser_checks.mjs',
     'build-native.ps1','circuit_tests.mjs','install.ps1','package-lock.json',
     'package.json','public.mjs','purchase.circom','runtime.mjs','setup.mjs',
@@ -25,7 +29,7 @@ NAMES += ['crypto-groupbuy/'+name for name in (
 def build():
     files={name:(ROOT/name).read_bytes() for name in NAMES}
     files['submission/index.html']=files['submission/index.html'].replace(b'groupbuy-source.zip',b'../README.txt')
-    files['README.txt']=(ROOT/'crypto-groupbuy/REPRODUCE.txt').read_bytes()
+    files['README.txt']=(ROOT/'crypto/REPRODUCE.txt').read_bytes()
     class Links(HTMLParser):
         def __init__(self,text):super().__init__();self.links=[];self.feed(text)
         def handle_starttag(self,tag,attrs):

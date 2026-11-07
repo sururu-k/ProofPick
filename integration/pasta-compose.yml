@@ -1,0 +1,5 @@
+# Combine with the upstream docker-compose.yml; paths stay relative to upstream.
+services:
+  gateway:
+    environment:
+      RP_ORIGIN: http://127.0.0.1:8765

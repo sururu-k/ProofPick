@@ -2,7 +2,7 @@
 import copy,json,sqlite3,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT/'prototype'))
+sys.path.insert(0,str(ROOT/'src'))
 from groupbuy_proof import ProofEngine
 from groupbuy_server import Store
 
@@ -31,5 +31,5 @@ def main(db_path):
     check('replaced_registered_order',orders=changed,reject=True)
     changed=copy.deepcopy(c);changed['price']+=1;check('changed_registered_price',campaign=changed,reject=True)
     output={'scope':'Actual Groth16 verification with independently rebuilt current-registry public inputs; no verifier mocks. Same-PC and development CRS.', 'checks':checks,'passed':all(x['passed'] for x in checks)}
-    (ROOT/'prototype/groupbuy-mpc-adversarial-report.json').write_text(json.dumps(output,indent=2),encoding='utf-8')
+    (ROOT/'tests/reports/groupbuy-mpc-adversarial-report.json').write_text(json.dumps(output,indent=2),encoding='utf-8')
 if __name__=='__main__':main(Path(sys.argv[1] if len(sys.argv)>1 else ROOT/'.work/groupbuy-mpc-test.sqlite3'))

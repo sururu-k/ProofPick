@@ -6,10 +6,10 @@ import {snarks} from './runtime.mjs';
 const require=createRequire(import.meta.url), root=path.resolve(import.meta.dirname,'..');
 process.chdir(root);
 const {CircomRunner,bindings}=require('../.tools/fhe-runtime/node_modules/circom2');
-const output='crypto-groupbuy/artifacts';fs.mkdirSync(output,{recursive:true});
+const output='crypto/artifacts';fs.mkdirSync(output,{recursive:true});
 fs.mkdirSync('.work',{recursive:true});
 const dir=fs.mkdtempSync('.work/groupbuy-setup-');
-const runner=new CircomRunner({args:['crypto-groupbuy/purchase.circom','--r1cs','--wasm','--sym','-l','.tools/fhe-runtime/node_modules/circomlib/circuits','-o',dir],env:process.env,preopens:{'.':'.'},bindings:{...bindings,fs}});
+const runner=new CircomRunner({args:['crypto/purchase.circom','--r1cs','--wasm','--sym','-l','.tools/fhe-runtime/node_modules/circomlib/circuits','-o',dir],env:process.env,preopens:{'.':'.'},bindings:{...bindings,fs}});
 await runner.execute(fs.readFileSync(require.resolve('../.tools/fhe-runtime/node_modules/circom2/circom.wasm')));
 const {zKey,powersOfTau}=await snarks();
 let ptau='.work/crypto-next/local-final.ptau';
@@ -27,12 +27,12 @@ await zKey.contribute('.work/groupbuy-initial.zkey',dir+'/purchase.zkey','local-
 fs.writeFileSync(dir+'/verification_key.json',JSON.stringify(await zKey.exportVerificationKey(dir+'/purchase.zkey')));
 // Reuse the exact Circomlib parameters in the browser, with attribution.
 const constants=JSON.parse(fs.readFileSync('.tools/fhe-runtime/node_modules/circomlibjs/src/poseidon_constants.json'));
-fs.mkdirSync('prototype/groupbuy-vendor',{recursive:true});
-fs.writeFileSync('prototype/groupbuy-vendor/poseidon.json',JSON.stringify({C:constants.C[3],M:constants.M[3]}));
-fs.copyFileSync('crypto-groupbuy/LICENSE-GPL','prototype/groupbuy-vendor/CIRCOMLIBJS-LICENSE');
+fs.mkdirSync('src/groupbuy-vendor',{recursive:true});
+fs.writeFileSync('src/groupbuy-vendor/poseidon.json',JSON.stringify({C:constants.C[3],M:constants.M[3]}));
+fs.copyFileSync('crypto/LICENSE-GPL','src/groupbuy-vendor/CIRCOMLIBJS-LICENSE');
 const files=['purchase.zkey','verification_key.json','purchase_js/purchase.wasm'];
 for(const n of [...files,'purchase.r1cs','purchase.sym']){fs.mkdirSync(path.dirname(output+'/'+n),{recursive:true});fs.copyFileSync(dir+'/'+n,output+'/'+n);}
 const manifest=Object.fromEntries(files.map(n=>[n,sha(fs.readFileSync(output+'/'+n))]));
-manifest['../purchase.circom']=sha(fs.readFileSync('crypto-groupbuy/purchase.circom'));
+manifest['../purchase.circom']=sha(fs.readFileSync('crypto/purchase.circom'));
 fs.writeFileSync(output+'/manifest.json',JSON.stringify(manifest,null,2));
 console.log('Group-purchase circuit and development proving key ready');process.exit(0);

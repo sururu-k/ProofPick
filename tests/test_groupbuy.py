@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 import base64
 import json
 import tempfile
@@ -82,6 +85,14 @@ class GroupPurchaseTests(unittest.TestCase):
         for t in threads:t.join()
         self.assertEqual(len(results),8)
         self.assertEqual(sum(not r['replayed'] for r in results),1)
+    def test_identity_binds_buyer_order_to_subject(self):
+        data={'campaign':self.cid,'id':self.oid,'ciphertext':self.sealed,'version':0,'mpc':self.mpc}
+        self.s.call('order',data,self.b,'alice')
+        self.assertEqual(len(self.s.call('view',{'campaign':self.cid},self.b,'alice')['orders']),1)
+        self.assertEqual(self.s.call('view',{'campaign':self.cid},self.b,'bob')['orders'],[])
+        with self.assertRaises(Rejected):self.s.call('cancel',{'campaign':self.cid,'id':self.oid},self.b,'bob')
+        self.s.call('cancel',{'campaign':self.cid,'id':self.oid},self.b,'alice')
+
     def test_http_enforces_origin(self):
         server=make_server(self.s,0);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
         try:

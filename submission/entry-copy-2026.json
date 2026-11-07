@@ -128,7 +128,7 @@
         },
         {
           "label": "ソースコード・設計スライド格納先【任意】",
-          "text": "crypto-groupbuy/purchase.circom、prototype/groupbuy_mpc.js、groupbuy_proof.py。役割・DB検査17件、実ブラウザ10項目、実証明の改変検査12件、不正な回路入力6件。単体検査のFakeEngineと実際の暗号実行は記録を分ける。"
+          "text": "crypto/purchase.circom、src/groupbuy_mpc.js、groupbuy_proof.py。役割・DB検査17件、実ブラウザ10項目、実証明の改変検査12件、不正な回路入力6件。単体検査のFakeEngineと実際の暗号実行は記録を分ける。"
         }
       ]
     },

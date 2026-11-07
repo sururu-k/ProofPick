@@ -9,18 +9,18 @@ C++ Build ToolsにはMSVC x64/x86とWindows SDKが必要。初回導入にはネ
 リポジトリのルート、またはソースZIPの展開先でPowerShellを開く。
 python -m venv .venv
 $env:Path = "$PWD\.venv\Scripts;$env:Path"
-powershell -File crypto-groupbuy/install.ps1 -BuildNative
+powershell -File crypto/install.ps1 -BuildNative
 既存の .tools/co-snarks がある場合、固定コミットとの一致を検査し、勝手に変更しない。
 初回のRustビルドには数分かかる。同じPowerShellを使ってアプリを起動する。
 
 起動:
-python prototype/groupbuy_server.py
+python src/groupbuy_server.py
 http://127.0.0.1:8765/
 初回起動時に、.work/groupbuy-mpc.sqlite3とノード用の鍵がそのPCで作られる。
-別のPowerShellを開いた場合は .\.venv\Scripts\python.exe prototype/groupbuy_server.py で起動できる。
+別のPowerShellを開いた場合は .\.venv\Scripts\python.exe src/groupbuy_server.py で起動できる。
 
 同梱のpurchase.zkey / verification_key.jsonを使うため、初回の証明生成にsetup.mjsは不要。
-回路やパラメータを意図的に再生成する場合だけ node crypto-groupbuy/setup.mjs。
+回路やパラメータを意図的に再生成する場合だけ node crypto/setup.mjs。
 これは開発用のローカルセットアップであり、独立した複数者による信頼できる設定儀式ではない。
 鍵を再生成すると、以前の証明は新しい検証鍵では検証できない。
 
@@ -33,19 +33,19 @@ http://127.0.0.1:8765/
 6. 準備完了後、参加者がそれぞれ受け取りを記録する。
 
 検査:
-python prototype/check_groupbuy.py
-  17件の役割・DB検査。この単体検査では暗号エンジンをFakeEngineに置換。
-node crypto-groupbuy/circuit_tests.mjs
+python tests/check_groupbuy.py
+  役割・DB検査。この単体検査では暗号エンジンをFakeEngineに置換。
+node crypto/circuit_tests.mjs
   実際のCircom WASMで、不正な数量・無効スロットなど6条件を拒否。
-node crypto-groupbuy/verify_export.mjs prototype/groupbuy-mpc-proof-example.json
+node crypto/verify_export.mjs tests/reports/groupbuy-mpc-proof-example.json
   実際のGroth16証明を検証。公開入力の主張そのものの認証は別途必要。
-python crypto-groupbuy/adversarial.py PATH_TO_COMPLETED_TEST_DB
+python crypto/adversarial.py PATH_TO_COMPLETED_TEST_DB
   実際に注文・証明・受け取りを完了した試用DBを使い、合計・証明・登録情報の改変を拒否。
 
 実測記録:
-prototype/groupbuy-mpc-browser-report.json：3参加者の数量2・3・4から合計9個・1620円。
-prototype/groupbuy-mpc-adversarial-report.json：実証明と登録情報に対する12検査。
-prototype/groupbuy-circuit-report.json：6種類の不正入力を拒否。
+tests/reports/groupbuy-mpc-browser-report.json：3参加者の数量2・3・4から合計9個・1620円。
+tests/reports/groupbuy-mpc-adversarial-report.json：実証明と登録情報に対する12検査。
+tests/reports/groupbuy-circuit-report.json：6種類の不正入力を拒否。
 
 秘密の境界:
 参加者のブラウザで数量・saltをREP3秘密分散。各ノードの2つのシェアをRSA-OAEPで暗号化。

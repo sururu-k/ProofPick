@@ -26,7 +26,7 @@ try{
  pass('実際のREP3共同計算・Groth16共同証明・snarkjs検証が成功');
  const info=await seller.evaluate(async()=>{const h=new URLSearchParams(location.hash.slice(1));return (await fetch('/api/view',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+h.get('token')},body:JSON.stringify({campaign:h.get('campaign')})})).json();});
  assert.equal(new Set(info.proof.pids).size,6);assert.equal(info.proof.public_inputs.length,32);
- await fs.writeFile('prototype/groupbuy-mpc-proof-example.json',JSON.stringify(info.proof,null,2));
+ await fs.writeFile('tests/reports/groupbuy-mpc-proof-example.json',JSON.stringify(info.proof,null,2));
  pass('6個のネイティブプロセスと32公開入力の証跡を保存');
  await seller.locator('#proofState').screenshot({path:'submission/groupbuy-mpc-proof.png'});
  await click(seller,'decrypt');assert.match(await seller.locator('#decrypted').innerText(),/合計 9個 \/ 1620円/);pass('開示した個別注文を登録commitmentと照合');
@@ -41,5 +41,5 @@ try{
  const blocked=await seller.evaluate(async()=>{const h=new URLSearchParams(location.hash.slice(1)),headers={'Content-Type':'application/json',Authorization:'Bearer '+h.get('token')},campaign=h.get('campaign');const v=await (await fetch('/api/view',{method:'POST',headers,body:JSON.stringify({campaign})})).json();const response=await fetch('/api/place',{method:'POST',headers,body:JSON.stringify({campaign,orders:v.orders.map(o=>o.id),snapshot:v.snapshot})});return {status:response.status,hidden:v.orders.every(o=>!('ciphertext' in o))};});
  assert.equal(blocked.status,409);assert.equal(blocked.hidden,true);pass('不成立の証明では発注を拒否し個別注文も開示しない');
  assert.deepEqual(errors,[]);pass('ブラウザ実行エラーなし');
- await fs.writeFile('prototype/groupbuy-mpc-browser-report.json',JSON.stringify({date:'2026-11-05',scope:'3 buyer browser contexts; 3 native REP3 witness processes and 3 Groth16 proving processes on one trusted PC; development CRS; synthetic orders; no real payment/delivery.',checks,elapsed_ms:info.proof.elapsed_ms},null,2));
+ await fs.writeFile('tests/reports/groupbuy-mpc-browser-report.json',JSON.stringify({date:'2026-11-05',scope:'3 buyer browser contexts; 3 native REP3 witness processes and 3 Groth16 proving processes on one trusted PC; development CRS; synthetic orders; no real payment/delivery.',checks,elapsed_ms:info.proof.elapsed_ms},null,2));
 }finally{await browser.close();}

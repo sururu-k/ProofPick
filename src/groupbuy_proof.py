@@ -17,7 +17,7 @@ from pathlib import Path
 from process_lock import exclusive_job
 
 ROOT=Path(__file__).resolve().parents[1]
-BASE=ROOT/'crypto-groupbuy'
+BASE=ROOT/'crypto'
 EXE=ROOT/'.tools/co-snarks/target/release/co-circom.exe'
 FIELD=21888242871839275222246405745257275088548364400416034343698204186575808495617
 

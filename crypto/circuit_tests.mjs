@@ -18,5 +18,5 @@ for(const [name,change]of [
  let rejected=false;try{await groth16.fullProve(v,dir+'purchase_js/purchase.wasm',dir+'purchase.zkey');}catch{rejected=true;}
  checks.push({case:name,passed:rejected});if(!rejected)throw Error(name+' accepted');
 }
-fs.writeFileSync(new URL('../prototype/groupbuy-circuit-report.json',import.meta.url),JSON.stringify({scope:'Actual Circom WASM witness constraints; intentionally invalid inputs. Not a multi-party run.',checks,passed:true},null,2));
+fs.writeFileSync(new URL('../tests/reports/groupbuy-circuit-report.json',import.meta.url),JSON.stringify({scope:'Actual Circom WASM witness constraints; intentionally invalid inputs. Not a multi-party run.',checks,passed:true},null,2));
 console.log(JSON.stringify({passed:true,checks:checks.length}));process.exit(0);

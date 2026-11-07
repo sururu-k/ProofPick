@@ -1,8 +1,9 @@
-"""Local encrypted group purchasing workflow. python prototype/groupbuy_server.py"""
+"""Local encrypted group purchasing workflow. python src/groupbuy_server.py"""
 import argparse
 import base64
 import hashlib
 import json
+import os
 import secrets
 import sqlite3
 import subprocess
@@ -64,18 +65,19 @@ class Store:
         finally:
             db.close()
 
-    def call(self, action, data, token=''):
+    def call(self, action, data, token='', principal=None):
         require(isinstance(data, dict), '入力はオブジェクトにしてください。')
         if action=='aggregate':return self.aggregate(data,token)
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            return self._call(db, action, data, token)
+            return self._call(db, action, data, token, principal)
 
     def event(self, db, cid, oid, action):
         db.execute('INSERT INTO events(campaign,order_id,action,at) VALUES(?,?,?,?)',
                    (cid, oid, action, int(time.time())))
 
-    def _call(self, db, action, d, token):
+    def _call(self, db, action, d, token, principal=None):
+        buyer_hash = digest(token) if principal is None else digest(json.dumps([principal, token], ensure_ascii=False, separators=(',',':')))
         if action == 'create':
             require(set(d) == {'title','product','price','minimum','deadline','public_key'}, '募集項目が不正です。')
             for name in ('title', 'product'):
@@ -118,7 +120,7 @@ class Store:
             result['order_count'] = sum(r['state'] != 'CANCELLED' for r in rows)
             result['orders'] = []
             for r in rows:
-                own = secrets.compare_digest(digest(token), r['buyer_hash'])
+                own = secrets.compare_digest(buyer_hash, r['buyer_hash'])
                 if owner or seller or own:
                     item = {k:r[k] for k in ('id','state','version')}
                     if own or seller and c['proof'] and json.loads(c['proof']).get('eligible'):
@@ -152,7 +154,7 @@ class Store:
             require(integer(version,0,100000), '更新番号が不正です。')
             old = db.execute('SELECT * FROM orders WHERE id=?',(oid,)).fetchone()
             if old:
-                require(old['campaign']==cid and secrets.compare_digest(old['buyer_hash'],digest(token)), 'この注文の操作権限がありません。')
+                require(old['campaign']==cid and secrets.compare_digest(old['buyer_hash'],buyer_hash), 'この注文の操作権限がありません。')
                 if old['ciphertext']==sealed and old['mpc']==mpc_json and old['version']==version+1 and old['state']!='CANCELLED':
                     return {'id':oid,'version':old['version'],'replayed':True}
             require(c['state']=='OPEN' and time.time()<c['deadline'], '受付は終了しています。')
@@ -162,12 +164,12 @@ class Store:
             else:
                 count=db.execute("SELECT COUNT(*) FROM orders WHERE campaign=? AND state!='CANCELLED'",(cid,)).fetchone()[0]
                 require(count<8,'この版では1募集あたり8件まで受け付けます。')
-                db.execute('INSERT INTO orders(id,campaign,buyer_hash,ciphertext,state,version,created,mpc) VALUES(?,?,?,?,?,?,?,?)',(oid,cid,digest(token),sealed,'SUBMITTED',1,int(time.time()),mpc_json))
+                db.execute('INSERT INTO orders(id,campaign,buyer_hash,ciphertext,state,version,created,mpc) VALUES(?,?,?,?,?,?,?,?)',(oid,cid,buyer_hash,sealed,'SUBMITTED',1,int(time.time()),mpc_json))
             self.event(db,cid,oid,'updated' if old else 'submitted')
             return {'id':oid,'version':version+1,'replayed':False}
         if action in ('cancel','receive'):
             r = db.execute('SELECT * FROM orders WHERE id=? AND campaign=?',(d.get('id'),cid)).fetchone()
-            require(r is not None and secrets.compare_digest(r['buyer_hash'],digest(token)), 'この注文の操作権限がありません。')
+            require(r is not None and secrets.compare_digest(r['buyer_hash'],buyer_hash), 'この注文の操作権限がありません。')
             target = 'CANCELLED' if action=='cancel' else 'RECEIVED'
             if r['state']==target:
                 return {'state':target,'replayed':True}
@@ -254,7 +256,7 @@ class Store:
         return report
 
 
-def make_server(store, port=8765):
+def make_server(store, port=8765, identity=None):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_): pass
         def send(self, status, value, mime='application/json; charset=utf-8'):
@@ -262,7 +264,7 @@ def make_server(store, port=8765):
             self.send_response(status)
             for key,val in {'Content-Type':mime,'Content-Length':str(len(raw)), 'Cache-Control':'no-store',
                             'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',
-                            'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'"}.items():
+                            'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:3000; frame-ancestors 'none'; base-uri 'none'"}.items():
                 self.send_header(key,val)
             self.end_headers(); self.wfile.write(raw)
         def valid(self):
@@ -272,7 +274,9 @@ def make_server(store, port=8765):
             if not self.valid(): return self.send(403,{'error':'local_only'})
             file={'/':('groupbuy.html','text/html; charset=utf-8'),'/groupbuy.js':('groupbuy.js','text/javascript; charset=utf-8'),
                   '/groupbuy_mpc.js':('groupbuy_mpc.js','text/javascript; charset=utf-8'),
+                  '/groupbuy_identity.js':('groupbuy_identity.js','text/javascript; charset=utf-8'),
                   '/groupbuy-vendor/poseidon.json':('groupbuy-vendor/poseidon.json','application/json')}.get(urlsplit(self.path).path)
+            if urlsplit(self.path).path == '/identity-config': return self.send(200, {'enabled': identity is not None})
             if not file: return self.send(404,{'error':'not_found'})
             return self.send(200,(Path(__file__).parent/file[0]).read_bytes(),file[1])
         def do_POST(self):
@@ -280,10 +284,14 @@ def make_server(store, port=8765):
             try:
                 size=int(self.headers.get('Content-Length','0'))
                 require(0<size<=16000,'リクエストが大きすぎます。')
+                principal = None
+                if identity:
+                    auth = self.headers.get('X-Identity-Token', '')
+                    principal = identity.verify(auth, self.headers.get('DPoP', ''), 'http://127.0.0.1:%s%s' % (self.server.server_port, urlsplit(self.path).path))
                 data=json.loads(self.rfile.read(size))
                 action=self.path.removeprefix('/api/') if self.path.startswith('/api/') else ''
                 token=self.headers.get('Authorization','').removeprefix('Bearer ')
-                return self.send(200,store.call(action,data,token))
+                return self.send(200,store.call(action,data,token,principal))
             except (ValueError,TypeError,KeyError) as exc:
                 return self.send(409,{'error':str(exc)})
             except ExperimentBusy:
@@ -298,6 +306,10 @@ if __name__=='__main__':
     parser.add_argument('--port',type=int,default=8765)
     parser.add_argument('--db',default='.work/groupbuy-mpc.sqlite3')
     args=parser.parse_args()
-    server=make_server(Store(args.db),args.port)
+    identity = None
+    if os.environ.get('PROOFPICK_IDENTITY') == '1':
+        from groupbuy_identity import IdentityVerifier
+        identity = IdentityVerifier()
+    server=make_server(Store(args.db),args.port,identity)
     print(f'Group purchase: http://127.0.0.1:{server.server_port}/',flush=True)
     server.serve_forever()
